@@ -9,8 +9,8 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_very_secret_key_in_dev_change_for_prod')
 
-model = genai.GenerativeModel(model_name='models/gemini-1.5-pro-latest', 
-                            system_instruction='You are a helpful assistant that writes professional emails. Talk in first name basis. Try to be as short and specific as possible.')
+# Initialize the model
+model = genai.GenerativeModel('gemini-pro')
 
 @app.route('/')
 def home():
@@ -31,7 +31,7 @@ def generate_email():
         f"Write a professional email to {name}. "
         f"The context of the email is: {context}. "
         f"My relationship with {name} is: {relationship}. "
-        f"Ensure the tone suits that relationship."
+        f"Ensure the tone suits that relationship. Keep it concise and professional."
     )
 
     try:
