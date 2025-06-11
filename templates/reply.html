@@ -81,11 +81,26 @@
       #copyIcon:hover {
         text-decoration: underline;
       }
+
+      .nav-link {
+        display: block;
+        text-align: right;
+        margin-bottom: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .nav-link:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
+    <a href="{{ url_for('home') }}" class="nav-link"
+      >⬅️ Go to Email Generator</a
+    >
+
     <h2>Professional Email Reply Generator</h2>
-    <a href="/">⬅️ Go to Email Generator</a>
 
     <form id="replyForm">
       <label for="original_email">Original Email:</label>
@@ -148,7 +163,7 @@
         replyContent.textContent = "Generating reply... Please wait.";
 
         try {
-          const res = await fetch("/reply", {
+          const res = await fetch("{{ url_for('generate_reply') }}", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -161,7 +176,8 @@
           if (data.reply) {
             replyContent.textContent = data.reply;
           } else {
-            replyContent.textContent = "Error: " + data.error;
+            replyContent.textContent =
+              "Error: " + (data.error || "Could not generate reply.");
           }
         } catch (err) {
           replyContent.textContent = "An error occurred: " + err.message;

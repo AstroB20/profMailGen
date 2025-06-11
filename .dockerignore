@@ -8,5 +8,4 @@ __pycache__
 env/
 venv/
 .env
-instance/
-*.db 
+*.log 

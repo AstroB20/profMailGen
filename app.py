@@ -3,154 +3,160 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 import logging
+import sys
+from typing import Dict, Any, Optional
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
 logger = logging.getLogger(__name__)
 
+# Load environment variables
 load_dotenv()
 
-# Check if API key is available
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    logger.error("GEMINI_API_KEY not found in environment variables")
-    raise ValueError("GEMINI_API_KEY environment variable is required")
+class EmailGenerator:
+    def __init__(self):
+        """Initialize the EmailGenerator with Gemini AI configuration."""
+        self._configure_gemini()
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
 
-genai.configure(api_key=api_key)
+    def _configure_gemini(self) -> None:
+        """Configure Gemini AI with API key from environment variables."""
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is required")
+        genai.configure(api_key=api_key)
+        logger.info("Successfully initialized Gemini model")
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your_very_secret_key_in_dev_change_for_prod')
-
-# Initialize the model
-try:
-    model = genai.GenerativeModel('gemini-pro')
-    logger.info("Successfully initialized Gemini model")
-except Exception as e:
-    logger.error(f"Failed to initialize Gemini model: {str(e)}")
-    raise
-
-@app.route('/')
-def home():
-    try:
-        return render_template('index.html')
-    except Exception as e:
-        logger.error(f"Error in home route: {str(e)}")
-        return "Internal Server Error", 500
-
-@app.route('/reply-page')
-def reply_page():
-    try:
-        return render_template('reply.html')
-    except Exception as e:
-        logger.error(f"Error in reply_page route: {str(e)}")
-        return "Internal Server Error", 500
-
-@app.route('/generate', methods=['POST'])
-def generate_email():
-    try:
-        data = request.json
-        if not data:
-            logger.error("No JSON data received")
-            return jsonify({"error": "No data provided"}), 400
-
-        name = data.get("name")
-        context = data.get("context")
-        relationship = data.get("relationship")
-
-        if not all([name, context, relationship]):
-            logger.error("Missing required fields")
-            return jsonify({"error": "Missing required fields"}), 400
-
+    def generate_email(self, name: str, context: str, relationship: str) -> str:
+        """Generate a professional email based on given parameters."""
         prompt = (
             f"Write a professional email to {name}. "
             f"The context of the email is: {context}. "
             f"My relationship with {name} is: {relationship}. "
             f"Ensure the tone suits that relationship. Keep it concise and professional."
         )
+        response = self.model.generate_content(prompt)
+        return response.text
 
-        logger.info(f"Generating email with prompt: {prompt}")
-        response = model.generate_content(prompt)
-        
-        if not response or not response.text:
-            logger.error("Empty response from Gemini API")
-            return jsonify({"error": "Failed to generate email"}), 500
-
-        return jsonify({"email": response.text})
-    except Exception as e:
-        logger.error(f"Error in generate_email: {str(e)}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/reply', methods=['POST'])
-def generate_reply():
-    try:
-        data = request.json
-        if not data:
-            logger.error("No JSON data received")
-            return jsonify({"error": "No data provided"}), 400
-
-        original_email = data.get("original_email")
-        intent = data.get("intent")
-        relationship = data.get("relationship")
-
-        if not all([original_email, intent, relationship]):
-            logger.error("Missing required fields")
-            return jsonify({"error": "Missing required fields"}), 400
-
+    def generate_reply(self, original_email: str, intent: str, relationship: str) -> str:
+        """Generate a reply to an existing email."""
         prompt = (
             f"You received the following email:\n\n{original_email}\n\n"
             f"Your intent for the reply is:\n{intent}\n\n"
             f"Your relationship with the sender is: {relationship}.\n"
             f"Generate a formal reply email that reflects this context and maintains a professional tone."
         )
+        response = self.model.generate_content(prompt)
+        return response.text
 
-        logger.info(f"Generating reply with prompt: {prompt}")
-        response = model.generate_content(prompt)
-        
-        if not response or not response.text:
-            logger.error("Empty response from Gemini API")
-            return jsonify({"error": "Failed to generate reply"}), 500
+    def optimize_reply(self, reply_text: str, optimize_type: str) -> str:
+        """Optimize an existing reply to be longer or shorter."""
+        if optimize_type not in ['longer', 'shorter']:
+            raise ValueError("optimize_type must be either 'longer' or 'shorter'")
 
-        return jsonify({"reply": response.text})
+        prompt = (
+            f"Here is an email reply:\n\n{reply_text}\n\n"
+            f"Please rewrite it to be more {'detailed and longer' if optimize_type == 'longer' else 'concise and shorter'}, "
+            "while keeping the professional tone."
+        )
+        response = self.model.generate_content(prompt)
+        return response.text.strip()
+
+# Create Flask app
+app = Flask(__name__)
+app.config.update(
+    SECRET_KEY=os.getenv('SECRET_KEY', 'your_very_secret_key_in_dev_change_for_prod'),
+    JSON_AS_ASCII=False
+)
+
+# Initialize email generator
+try:
+    email_generator = EmailGenerator()
+except Exception as e:
+    logger.error(f"Failed to initialize email generator: {str(e)}")
+    raise
+
+@app.route('/')
+def home() -> str:
+    """Render the home page."""
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        logger.error(f"Error rendering index.html: {str(e)}")
+        return f"Error: {str(e)}", 500
+
+@app.route('/reply-page')
+def reply_page() -> str:
+    """Render the reply page."""
+    try:
+        return render_template('reply.html')
+    except Exception as e:
+        logger.error(f"Error rendering reply.html: {str(e)}")
+        return f"Error: {str(e)}", 500
+
+@app.route('/generate', methods=['POST'])
+def generate_email() -> tuple[Dict[str, Any], int]:
+    """Generate a new email based on provided parameters."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        required_fields = ["name", "context", "relationship"]
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        email = email_generator.generate_email(
+            name=data["name"],
+            context=data["context"],
+            relationship=data["relationship"]
+        )
+        return jsonify({"email": email})
+    except Exception as e:
+        logger.error(f"Error in generate_email: {str(e)}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/reply', methods=['POST'])
+def generate_reply() -> tuple[Dict[str, Any], int]:
+    """Generate a reply to an existing email."""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        required_fields = ["original_email", "intent", "relationship"]
+        if not all(field in data for field in required_fields):
+            return jsonify({"error": "Missing required fields"}), 400
+
+        reply = email_generator.generate_reply(
+            original_email=data["original_email"],
+            intent=data["intent"],
+            relationship=data["relationship"]
+        )
+        return jsonify({"reply": reply})
     except Exception as e:
         logger.error(f"Error in generate_reply: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/optimize-reply', methods=['POST'])
-def optimize_reply():
+def optimize_reply() -> tuple[Dict[str, Any], int]:
+    """Optimize an existing reply to be longer or shorter."""
     try:
-        data = request.json
+        data = request.get_json()
         if not data:
-            logger.error("No JSON data received")
             return jsonify({"error": "No data provided"}), 400
 
-        reply_text = data.get('reply')
-        optimize_type = data.get('optimize_type')
-
-        if not reply_text or optimize_type not in ['longer', 'shorter']:
-            logger.error("Invalid input for optimize_reply")
+        if not data.get('reply') or data.get('optimize_type') not in ['longer', 'shorter']:
             return jsonify({"error": "Invalid input"}), 400
 
-        if optimize_type == 'longer':
-            prompt = (
-                f"Here is an email reply:\n\n{reply_text}\n\n"
-                "Please rewrite it to be more detailed and longer, "
-                "while keeping the professional tone."
-            )
-        else:  
-            prompt = (
-                f"Here is an email reply:\n\n{reply_text}\n\n"
-                "Please rewrite it to be more concise and shorter, "
-                "while keeping the professional tone."
-            )
-
-        logger.info(f"Optimizing reply with prompt: {prompt}")
-        response = model.generate_content(prompt)
-        
-        if not response or not response.text:
-            logger.error("Empty response from Gemini API")
-            return jsonify({"error": "Failed to optimize reply"}), 500
-
-        optimized_reply = response.text.strip()
+        optimized_reply = email_generator.optimize_reply(
+            reply_text=data['reply'],
+            optimize_type=data['optimize_type']
+        )
         return jsonify({"optimized_reply": optimized_reply})
     except Exception as e:
         logger.error(f"Error in optimize_reply: {str(e)}")

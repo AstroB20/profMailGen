@@ -12,22 +12,6 @@
         background-color: #f4f4f4;
       }
 
-      .auth-links {
-        text-align: right;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-        border-bottom: 1px solid #ddd;
-      }
-      .auth-links a,
-      .auth-links span {
-        margin-left: 15px;
-        text-decoration: none;
-        color: #333;
-      }
-      .auth-links a:hover {
-        text-decoration: underline;
-      }
-
       h2 {
         text-align: center;
         color: #333;
@@ -97,22 +81,26 @@
       #copyIcon:hover {
         text-decoration: underline;
       }
+
+      .nav-link {
+        display: block;
+        text-align: right;
+        margin-bottom: 20px;
+        color: #333;
+        text-decoration: none;
+      }
+
+      .nav-link:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
-    <div class="auth-links">
-      {% if current_user.is_authenticated %}
-      <span>Welcome, {{ current_user.username }}!</span><br />
-      <small><em>{{ current_user.description }}</em></small>
-      <a href="{{ url_for('logout') }}">Logout</a>
-      {% else %}
-      <a href="{{ url_for('login') }}">Login</a>
-      <a href="{{ url_for('register') }}">Register</a>
-      {% endif %}
-    </div>
+    <a href="{{ url_for('reply_page') }}" class="nav-link"
+      >Go to Reply Generator ➡️</a
+    >
 
     <h2>Professional Email Generator</h2>
-    <a href="{{ url_for('reply_page') }}">Go to Reply Generator ➡️</a>
 
     <form id="emailForm">
       <label for="to">Recipient Email:</label>
