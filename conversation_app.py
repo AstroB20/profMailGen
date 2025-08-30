@@ -32,7 +32,10 @@ model = setup_ai()
 # Database setup
 @st.cache_resource
 def init_database():
-    conn = sqlite3.connect('conversations.db', check_same_thread=False)
+    # Use /tmp directory for SQLite in Cloud Run (ephemeral storage)
+    db_path = '/tmp/conversations.db' if os.getenv('GAE_ENV') or os.getenv('K_SERVICE') else 'conversations.db'
+    
+    conn = sqlite3.connect(db_path, check_same_thread=False)
     conn.execute('PRAGMA foreign_keys = ON')
     
     # Drop existing tables if schema has changed
