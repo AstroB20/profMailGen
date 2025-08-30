@@ -5,12 +5,11 @@ from typing import List, Dict
 import google.generativeai as genai
 import os
 
-# Configure Streamlit with clean layout
+# Configure Streamlit
 st.set_page_config(
     page_title="AI Conversation Manager", 
     page_icon="💬", 
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
 
 # Configure Gemini AI
@@ -75,79 +74,11 @@ def init_database():
 
 db = init_database()
 
-# Modern Clean CSS
+# Minimal CSS (Only for chat bubbles)
 st.markdown("""
 <style>
-/* Global styles */
-.main > div {
-    padding-top: 2rem;
-}
-
-/* Contact Cards */
-.contact-card {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    margin: 16px 0;
-    border: 1px solid #e1e5e9;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
-}
-
-.contact-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-.contact-name {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 8px;
-}
-
-.contact-detail {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin: 4px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.contact-stats {
-    background: #f8fafc;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 12px;
-    border-left: 4px solid #3b82f6;
-}
-
-/* Conversation Cards */
-.conversation-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 12px 0;
-    border-left: 4px solid #3b82f6;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-}
-
-.conversation-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 8px;
-}
-
-.conversation-meta {
-    color: #6b7280;
-    font-size: 0.8rem;
-}
-
-/* Chat Messages */
 .user-message {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    background: #2196F3;
     color: white;
     padding: 12px 16px;
     border-radius: 18px;
@@ -156,12 +87,11 @@ st.markdown("""
     max-width: 70%;
     float: right;
     clear: both;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .contact-message {
-    background: #f1f5f9;
-    color: #1e293b;
+    background: #e4e6ea;
+    color: #050505;
     padding: 12px 16px;
     border-radius: 18px;
     border-bottom-left-radius: 4px;
@@ -169,118 +99,12 @@ st.markdown("""
     max-width: 70%;
     float: left;
     clear: both;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .message-time {
     font-size: 11px;
     opacity: 0.7;
     margin-top: 4px;
-}
-
-/* AI Reply Box */
-.ai-reply-box {
-    background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
-    border: 2px solid #10b981;
-    border-radius: 12px;
-    padding: 20px;
-    margin: 20px 0;
-}
-
-.ai-reply-header {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #059669;
-    margin-bottom: 12px;
-}
-
-/* Header styling */
-.page-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.page-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-    font-size: 1.1rem;
-    opacity: 0.9;
-}
-
-/* Section headers */
-.section-header {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin: 1.5rem 0 1rem 0;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-/* Stats badges */
-.stat-badge {
-    display: inline-block;
-    background: #dbeafe;
-    color: #1e40af;
-    padding: 4px 12px;
-    border-radius: 16px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    margin-right: 8px;
-}
-
-.success-badge {
-    background: #dcfce7;
-    color: #166534;
-}
-
-.warning-badge {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-/* Form improvements */
-.stTextInput > div > div > input {
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    padding: 0.75rem;
-}
-
-.stTextArea > div > div > textarea {
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    padding: 0.75rem;
-}
-
-/* Button improvements */
-.stButton > button {
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .contact-card {
-        padding: 16px;
-        margin: 12px 0;
-    }
-    
-    .user-message, .contact-message {
-        max-width: 85%;
-    }
-    
-    .page-title {
-        font-size: 2rem;
-    }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -422,104 +246,57 @@ def navigate_to(page, contact_id=None, conversation_id=None):
         st.session_state.current_conversation = conversation_id
     st.rerun()
 
-# Main App Header
-st.markdown("""
-<div class="page-header">
-    <div class="page-title">💬 AI Conversation Manager</div>
-    <div class="page-subtitle">Manage your professional email conversations with AI assistance</div>
-</div>
-""", unsafe_allow_html=True)
+# Main app
+st.title("💬 AI Conversation Manager")
 
-# PAGE 1: CONTACTS LIST
+# PAGE 1: CONTACTS LIST (SIMPLE VERSION)
 if st.session_state.page == "contacts":
+    st.header("👥 Your Contacts")
     
     # Add Contact Section
-    with st.expander("➕ Add New Contact", expanded=False):
+    with st.expander("➕ Add New Contact"):
         with st.form("add_contact"):
-            st.markdown("#### Contact Information")
-            
             col1, col2 = st.columns(2)
             with col1:
-                name = st.text_input("Full Name *", placeholder="Enter contact's name")
-                email = st.text_input("Email Address", placeholder="contact@company.com")
+                name = st.text_input("Name*")
+                email = st.text_input("Email")
             with col2:
-                designation = st.text_input("Job Title", placeholder="e.g., Project Manager")
-                company = st.text_input("Company", placeholder="e.g., Acme Corp")
+                designation = st.text_input("Job Title")
+                company = st.text_input("Company")
             
-            notes = st.text_area("Notes (Optional)", placeholder="Additional information about this contact...")
+            notes = st.text_area("Notes (optional)")
             
-            col1, col2, col3 = st.columns([1, 1, 2])
-            with col2:
-                if st.form_submit_button("✅ Create Contact", use_container_width=True):
-                    if name.strip():
-                        contact_id = add_contact(name.strip(), email.strip(), 
-                                               designation.strip(), company.strip(), notes.strip())
-                        st.success(f"✅ Successfully added {name} to your contacts!")
-                        st.rerun()
-                    else:
-                        st.error("Please enter a contact name")
+            if st.form_submit_button("Create Contact"):
+                if name.strip():
+                    contact_id = add_contact(name.strip(), email.strip(), 
+                                           designation.strip(), company.strip(), notes.strip())
+                    st.success(f"✅ Created contact: {name}")
+                    st.rerun()
+                else:
+                    st.error("Name is required")
     
-    # Display contacts
+    st.divider()
+    
+    # Simple Contact Display (NO HTML)
     contacts = get_contacts()
     
     if contacts:
-        st.markdown(f'<div class="section-header">👥 Your Contacts ({len(contacts)})</div>', unsafe_allow_html=True)
-        
-        # Contact grid
-        for i, contact in enumerate(contacts):
+        for contact in contacts:
             contact_id, name, email, designation, company, notes, created_at = contact
             
-            conv_count = db.execute(
-                "SELECT COUNT(*) FROM conversations WHERE contact_id = ?", 
-                (contact_id,)
-            ).fetchone()[0]
-            
-            # Contact Card
+            # Simple layout - just name and button
             col1, col2 = st.columns([4, 1])
             
             with col1:
-                st.markdown(f"""
-                <div class="contact-card">
-                    <div class="contact-name">👤 {name}</div>
-                    
-                    <div class="contact-detail">
-                        📧 {email if email else 'No email provided'}
-                    </div>
-                    
-                    <div class="contact-detail">
-                        💼 {designation if designation else 'No title'} 
-                        {f'at {company}' if company else ''}
-                    </div>
-                    
-                    {f'<div class="contact-detail">📝 {notes}</div>' if notes else ''}
-                    
-                    <div class="contact-stats">
-                        <span class="stat-badge {'success-badge' if conv_count > 0 else ''}">
-                            💬 {conv_count} conversation{'s' if conv_count != 1 else ''}
-                        </span>
-                        <span class="stat-badge">
-                            📅 Added {datetime.datetime.fromisoformat(created_at).strftime('%b %d, %Y')}
-                        </span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.write(f"**👤 {name}**")
             
             with col2:
-                st.write("")  # Spacing
-                st.write("")  # Spacing
-                if st.button("💬 View Conversations", key=f"view_{contact_id}", use_container_width=True):
+                if st.button("View Conversations", key=f"view_{contact_id}"):
                     navigate_to("conversations", contact_id)
-                    
-                if st.button("✏️ Edit", key=f"edit_{contact_id}", use_container_width=True):
-                    st.info("Edit feature coming soon!")
+            
+            st.divider()
     else:
-        st.markdown("""
-        <div style="text-align: center; padding: 3rem; color: #6b7280;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">📭</div>
-            <h3>No contacts yet</h3>
-            <p>Add your first contact above to start managing conversations</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("📭 No contacts yet. Add your first contact above!")
 
 # PAGE 2: CONVERSATIONS FOR SELECTED CONTACT
 elif st.session_state.page == "conversations":
@@ -531,40 +308,32 @@ elif st.session_state.page == "conversations":
         # Navigation
         col1, col2 = st.columns([1, 6])
         with col1:
-            if st.button("← Back to Contacts"):
+            if st.button("← Back"):
                 navigate_to("contacts")
         
-        st.markdown(f"""
-        <div class="section-header">
-            💬 Conversations with {name}
-            <div style="font-size: 0.9rem; color: #6b7280; font-weight: normal; margin-top: 4px;">
-                {designation if designation else 'Contact'} {f'at {company}' if company else ''}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.header(f"💬 Conversations with {name}")
         
         # New conversation section
         with st.expander("🆕 Start New Conversation"):
             with st.form("new_conversation"):
-                st.markdown("#### Create a New Conversation Thread")
                 conv_title = st.text_input("Conversation Topic", 
-                                          placeholder="e.g., Q1 Project Planning, Budget Discussion")
+                                          placeholder="e.g., Project Discussion, Meeting Follow-up")
                 
-                col1, col2, col3 = st.columns([1, 1, 2])
-                with col2:
-                    if st.form_submit_button("🚀 Start Conversation", use_container_width=True):
-                        if conv_title.strip():
-                            conv_id = add_conversation(contact_id, conv_title.strip())
-                            st.success(f"✅ Started conversation: {conv_title}")
-                            navigate_to("chat", conversation_id=conv_id)
-                        else:
-                            st.error("Please enter a conversation topic")
+                if st.form_submit_button("Create Conversation"):
+                    if conv_title.strip():
+                        conv_id = add_conversation(contact_id, conv_title.strip())
+                        st.success(f"✅ Created conversation: {conv_title}")
+                        navigate_to("chat", conversation_id=conv_id)
+                    else:
+                        st.error("Please enter a conversation topic")
+        
+        st.divider()
         
         # Display conversations
         conversations = get_conversations_for_contact(contact_id)
         
         if conversations:
-            st.markdown("#### 📋 Conversation History")
+            st.subheader("📋 Conversation History")
             
             for conv in conversations:
                 conv_id, contact_id, title, status, context_summary, created_at, updated_at, message_count, last_message_time = conv
@@ -572,29 +341,16 @@ elif st.session_state.page == "conversations":
                 col1, col2 = st.columns([5, 1])
                 
                 with col1:
-                    st.markdown(f"""
-                    <div class="conversation-card">
-                        <div class="conversation-title">💬 {title}</div>
-                        <div class="conversation-meta">
-                            📊 {message_count or 0} messages • 
-                            📅 Last activity: {updated_at[:16] if updated_at else 'No activity'} • 
-                            🏷️ {status.title()}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.write(f"**💬 {title}**")
+                    st.caption(f"📊 {message_count or 0} messages • Status: {status}")
                 
                 with col2:
-                    st.write("")  # Spacing
-                    if st.button("Open Chat", key=f"open_{conv_id}", use_container_width=True):
+                    if st.button("Open Chat", key=f"open_{conv_id}"):
                         navigate_to("chat", conversation_id=conv_id)
+                
+                st.divider()
         else:
-            st.markdown(f"""
-            <div style="text-align: center; padding: 2rem; color: #6b7280;">
-                <div style="font-size: 2rem; margin-bottom: 1rem;">🔍</div>
-                <h4>No conversations with {name} yet</h4>
-                <p>Start a new conversation above to begin tracking your communication</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.info(f"🔍 No conversations with {name} yet. Start a new conversation above!")
 
 # PAGE 3: CHAT THREAD
 elif st.session_state.page == "chat":
@@ -609,22 +365,15 @@ elif st.session_state.page == "chat":
             if st.button("← Back"):
                 navigate_to("conversations", contact_id)
         
-        # Chat header
-        st.markdown(f"""
-        <div class="section-header">
-            💬 {title}
-            <div style="font-size: 0.9rem; color: #6b7280; font-weight: normal; margin-top: 4px;">
-                With {contact_name} • {designation if designation else 'Contact'} {f'at {company}' if company else ''}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.header(f"💬 {title}")
+        st.caption(f"With {contact_name}")
         
         # Display messages
         messages = get_messages(st.session_state.current_conversation)
         
+        st.subheader("Chat Messages")
+        
         if messages:
-            st.markdown("#### Chat Messages")
-            
             for msg in messages:
                 msg_id, conv_id, content, direction, sequence, created_at = msg
                 timestamp = datetime.datetime.fromisoformat(created_at).strftime("%H:%M")
@@ -648,46 +397,40 @@ elif st.session_state.page == "chat":
         else:
             st.info("💭 No messages yet. Start the conversation below!")
         
-        st.markdown("---")
+        st.divider()
         
         # AI Reply section
-        st.markdown("#### 🤖 AI Reply Assistant")
+        st.subheader("🤖 AI Reply Assistant")
         
         with st.form("ai_reply", clear_on_submit=True):
             intent = st.text_input("What do you want to accomplish with your reply?", 
-                                  placeholder="e.g., Schedule a meeting, Ask for project update, Decline politely")
+                                  placeholder="e.g., Schedule a meeting, Ask for project update")
             
-            col1, col2, col3 = st.columns([1, 2, 1])
-            with col2:
-                if st.form_submit_button("🎯 Generate AI Reply", use_container_width=True):
-                    if intent.strip():
-                        with st.spinner("🤖 AI is crafting your reply..."):
-                            try:
-                                reply_text = generate_ai_reply_content(st.session_state.current_conversation, intent.strip())
-                                
-                                st.session_state.ai_reply_content = reply_text
-                                st.session_state.show_ai_reply = True
-                                
-                                st.success("✅ AI Reply Generated!")
-                                st.rerun()
+            if st.form_submit_button("🎯 Generate AI Reply"):
+                if intent.strip():
+                    with st.spinner("🤖 AI is crafting your reply..."):
+                        try:
+                            reply_text = generate_ai_reply_content(st.session_state.current_conversation, intent.strip())
                             
-                            except Exception as e:
-                                st.error(f"❌ AI Error: {str(e)}")
-                    else:
-                        st.error("Please describe what you want to accomplish")
+                            st.session_state.ai_reply_content = reply_text
+                            st.session_state.show_ai_reply = True
+                            
+                            st.success("✅ AI Reply Generated!")
+                            st.rerun()
+                        
+                        except Exception as e:
+                            st.error(f"❌ AI Error: {str(e)}")
+                else:
+                    st.error("Please describe what you want to accomplish")
         
         # Display AI reply
         if st.session_state.show_ai_reply and st.session_state.ai_reply_content:
-            st.markdown(f"""
-            <div class="ai-reply-box">
-                <div class="ai-reply-header">🤖 AI Generated Reply</div>
-                <p style="color: #059669; margin-bottom: 16px;">💡 Copy this reply or click 'Use This Reply' to paste it in your message box below.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.subheader("📋 AI Generated Reply")
+            st.info("💡 Copy this reply or click 'Use This Reply' to paste it in your message box below.")
             
-            st.code(st.session_state.ai_reply_content, language=None)
+            st.code(st.session_state.ai_reply_content)
             
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 if st.button("✅ Use This Reply"):
                     st.session_state.sent_message_text = st.session_state.ai_reply_content
@@ -705,10 +448,10 @@ elif st.session_state.page == "chat":
                     st.session_state.show_ai_reply = False
                     st.rerun()
         
-        st.markdown("---")
+        st.divider()
         
         # Input section
-        st.markdown("#### Add Messages")
+        st.subheader("Add Messages")
         
         col1, col2 = st.columns(2)
         
@@ -716,10 +459,9 @@ elif st.session_state.page == "chat":
         with col1:
             st.markdown("**📥 Message from contact**")
             with st.form("add_received", clear_on_submit=True):
-                received_text = st.text_area("Paste what they sent:", height=120, 
-                                           placeholder=f"Paste {contact_name}'s message here...")
+                received_text = st.text_area("Paste what they sent:", height=120)
                 
-                if st.form_submit_button("➕ Add Received Message", use_container_width=True):
+                if st.form_submit_button("Add Received Message"):
                     if received_text.strip():
                         add_message(st.session_state.current_conversation, 
                                    received_text.strip(), "received")
@@ -735,12 +477,11 @@ elif st.session_state.page == "chat":
             sent_text = st.text_area("Type or paste your message:", 
                                    height=120,
                                    value=st.session_state.sent_message_text,
-                                   placeholder="Type what you sent to them...",
                                    key=f"sent_textarea_{st.session_state.current_conversation}")
             
             st.session_state.sent_message_text = sent_text
             
-            if st.button("➕ Add Sent Message", key="add_sent_btn", use_container_width=True):
+            if st.button("Add Sent Message"):
                 if sent_text.strip():
                     add_message(st.session_state.current_conversation, 
                                sent_text.strip(), "sent")
@@ -757,9 +498,4 @@ elif st.session_state.page == "chat":
 
 # Footer
 st.markdown("---")
-st.markdown("""
-<div style="text-align: center; color: #6b7280; padding: 2rem;">
-    <p>🚀 Built with Streamlit & Gemini AI • Deployed on Google Cloud Run</p>
-    <p style="font-size: 0.8rem;">💡 <strong>Tip:</strong> Build detailed contact profiles, then manage multiple conversation threads per contact. AI replies use full conversation context for better responses!</p>
-</div>
-""", unsafe_allow_html=True)
+st.caption("💡 Built with Streamlit & Gemini AI")
