@@ -4,10 +4,6 @@ import datetime
 from typing import List, Dict
 import google.generativeai as genai
 import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 # Configure Streamlit
 st.set_page_config(
@@ -16,12 +12,13 @@ st.set_page_config(
     layout="wide"
 )
 
-# Configure Gemini AI
+# Configure Gemini AI (FIXED - No .env dependency)
 @st.cache_resource
 def setup_ai():
+    # Get API key directly from environment (set in Cloud Run)
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        st.error("Please set GEMINI_API_KEY in your .env file")
+        st.error("Please set GEMINI_API_KEY environment variable in Cloud Run")
         st.stop()
     
     genai.configure(api_key=api_key)
@@ -29,23 +26,18 @@ def setup_ai():
 
 model = setup_ai()
 
-# Database setup
+# Database setup (FIXED - Use /tmp for Cloud Run)
 @st.cache_resource
 def init_database():
     # Use /tmp directory for SQLite in Cloud Run (ephemeral storage)
-    db_path = '/tmp/conversations.db' if os.getenv('GAE_ENV') or os.getenv('K_SERVICE') else 'conversations.db'
+    db_path = '/tmp/conversations.db'
     
     conn = sqlite3.connect(db_path, check_same_thread=False)
     conn.execute('PRAGMA foreign_keys = ON')
     
-    # Drop existing tables if schema has changed
-    conn.execute('DROP TABLE IF EXISTS messages')
-    conn.execute('DROP TABLE IF EXISTS conversations') 
-    conn.execute('DROP TABLE IF EXISTS contacts')
-    
-    # Create tables with all columns
+    # Create tables
     conn.execute('''
-        CREATE TABLE contacts (
+        CREATE TABLE IF NOT EXISTS contacts (
             id INTEGER PRIMARY KEY,
             name TEXT NOT NULL,
             email TEXT DEFAULT '',
@@ -57,7 +49,7 @@ def init_database():
     ''')
     
     conn.execute('''
-        CREATE TABLE conversations (
+        CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY,
             contact_id INTEGER NOT NULL,
             title TEXT NOT NULL,
@@ -70,7 +62,7 @@ def init_database():
     ''')
     
     conn.execute('''
-        CREATE TABLE messages (
+        CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY,
             conversation_id INTEGER NOT NULL,
             content TEXT NOT NULL,
@@ -435,7 +427,7 @@ elif st.session_state.page == "chat":
         
         st.divider()
         
-        # AI Reply section (ENHANCED - NO AUTO-ADD)
+        # AI Reply section
         st.subheader("🤖 AI Reply Assistant")
         
         with st.form("ai_reply", clear_on_submit=True):
@@ -459,7 +451,7 @@ elif st.session_state.page == "chat":
                 else:
                     st.error("Please describe what you want to accomplish")
         
-        # Display AI generated reply (ENHANCED)
+        # Display AI generated reply
         if st.session_state.show_ai_reply and st.session_state.ai_reply_content:
             st.markdown('<div class="ai-reply-box">', unsafe_allow_html=True)
             st.markdown("### 📋 AI Generated Reply")
@@ -489,7 +481,7 @@ elif st.session_state.page == "chat":
         
         st.divider()
         
-        # Input section (FIXED PREFILLING)
+        # Input section
         st.subheader("Add Messages")
         
         col1, col2 = st.columns(2)
@@ -510,7 +502,7 @@ elif st.session_state.page == "chat":
                     else:
                         st.error("Please enter a message")
         
-        # Right - Sent messages (FIXED - Outside form for better control)
+        # Right - Sent messages (FIXED prefilling)
         with col2:
             st.markdown("**📤 Your message**")
             
@@ -530,7 +522,7 @@ elif st.session_state.page == "chat":
                                sent_text.strip(), "sent")
                     st.success("✅ Message added!")
                     
-                    # Clear the textarea and AI reply after successful send
+                    # Clear after successful send
                     st.session_state.sent_message_text = ""
                     st.session_state.ai_reply_content = ""
                     st.session_state.show_ai_reply = False

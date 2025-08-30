@@ -22,7 +22,7 @@ EXPOSE 8080
 ENV STREAMLIT_SERVER_PORT=8080
 ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
 
-# FIXED: Use environment variable $PORT with fallback to 8080
+# Run Streamlit with Cloud Run compatible settings
 CMD streamlit run conversation_app.py \
     --server.port=${PORT:-8080} \
     --server.address=0.0.0.0 \
