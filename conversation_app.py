@@ -496,6 +496,5 @@ elif st.session_state.page == "chat":
                 else:
                     st.error("Please enter a message")
 
-# Footer
 st.markdown("---")
 st.caption("💡 Built with Streamlit & Gemini AI")
