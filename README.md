@@ -1,61 +1,62 @@
-# Professional Email Generator
+AI Conversation Manager
+A cloud-deployed Streamlit web application to manage professional contacts and multi-threaded email conversations with AI-assisted reply generation.
 
-A Flask application that generates professional emails using Google's Generative AI.
+Features
+Contact Management: Add and maintain detailed profiles for multiple contacts including name, email, role, company, and notes.
 
-## Deployment to Google Cloud Run
+Conversation Threads: Create and manage multiple conversation threads per contact to track different discussions separately.
 
-### Prerequisites
+Messaging Interface: Chat-style sent and received messages allowing easy tracking of correspondence history.
 
-1. Google Cloud SDK installed
-2. Docker installed
-3. A Google Cloud project created
-4. Git repository set up
+AI Reply Generation: Integrated with Google Gemini AI to generate professional replies based on the conversational context and user intent.
 
-### Deployment Steps
+User Control: Review, edit, and manually add AI-generated replies ensuring professional and personalized communication.
 
-1. **Enable required APIs**
+Cloud Deployment: Runs on Google Cloud Run for scalable, serverless hosting accessible anywhere securely.
 
-```bash
-gcloud services enable run.googleapis.com
-gcloud services enable cloudbuild.googleapis.com
-```
+Lightweight Database: Uses SQLite for data persistence within the ephemeral Cloud Run environment.
 
-2. **Set your project ID**
+Technology Stack
+Python 3.x, Streamlit UI Framework
 
-```bash
-gcloud config set project YOUR_PROJECT_ID
-```
+Google Gemini AI API for generative intents
 
-3. **Build and deploy using Cloud Build**
+SQLite for local lightweight storage
 
-```bash
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/profmailgen
-gcloud run deploy profmailgen \
-  --image gcr.io/YOUR_PROJECT_ID/profmailgen \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
-```
+Docker containerization and Google Cloud Run cloud deployment
 
-4. **Set environment variables**
-   After deployment, set your environment variables in the Google Cloud Console:
+Getting Started
+Prerequisites
+Google Cloud account with Cloud Run enabled
 
-- Go to Cloud Run > profmailgen > Edit & Deploy New Revision
-- Under "Variables & Secrets", add your environment variables:
-  - `GOOGLE_API_KEY`
+Gemini API key for AI integration
 
-### Local Development
+gcloud CLI installed (optional for CLI deployments)
 
-1. Install dependencies:
+Deployment
+Clone the repository.
 
-```bash
+Set the GEMINI_API_KEY environment variable in Cloud Run settings.
+
+Build and deploy the Docker container image to Cloud Run.
+
+Access the public URL provided by Cloud Run for your app.
+
+Running Locally
+bash
 pip install -r requirements.txt
-```
+export GEMINI_API_KEY=your_api_key
+streamlit run conversation_app.py
+Usage
+Add contacts with business details.
 
-2. Run the application:
+Start multiple conversation threads per contact.
 
-```bash
-python app.py
-```
+Add sent and received messages.
 
-The application will be available at `http://localhost:5000`
+Generate AI-assisted replies by specifying the purpose of your response.
+
+Copy, edit, and send AI-generated replies seamlessly.
+
+Why It Matters
+This application empowers professionals and teams to efficiently organize complex communications. By automating the drafting of well-contextualized professional replies, it saves time, ensures consistent tone, and enhances follow-up accuracy — key for relationship management and business productivity.
